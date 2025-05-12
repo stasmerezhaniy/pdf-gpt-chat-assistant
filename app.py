@@ -2,7 +2,7 @@ import streamlit as st
 import fitz  # PyMuPDF
 import openai
 from api_key import API_KEY
-
+import tempfile
 from utils.pdf_reader import extract_text_from_pdf
 from utils.text_splitter import split_text
 from utils.chat_engine import get_gpt_answer
@@ -19,32 +19,39 @@ personas = [
     "Marie Curie"
 ]
 
-st.title("📄 PDF Chat Assistant with GPT")
+st.title("📄 PDF Chat Assistant with GPT + OCR")
 
 # Persona selector
 selected_persona = st.selectbox("Choose a response persona:", personas)
 
-# File upload
-uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
+# PDF upload
+uploaded_file = st.file_uploader("Upload your PDF", type="pdf")
 
-text = ""
-chunks = []
+chunks = []  # ensure chunks is defined in case file is not uploaded
 
 if uploaded_file is not None:
-    doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
-    text = extract_text_from_pdf(doc)
-    chunks = split_text(text)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+        tmp_file.write(uploaded_file.read())
+        tmp_path = tmp_file.name
 
-# Initialize chat history
+    raw_text = extract_text_from_pdf(tmp_path)
+
+    if not raw_text or not isinstance(raw_text, str):
+        st.error("❌ No text could be extracted from this PDF.")
+        st.stop()
+
+    chunks = split_text(raw_text)
+
+# Chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display previous messages
+# Display history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# Handle user input
+# Chat input
 if prompt := st.chat_input("Ask a question about the PDF"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):

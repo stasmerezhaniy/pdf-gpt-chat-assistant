@@ -17,7 +17,8 @@ def get_gpt_answer(docs, query, prompt, api_key):
     try:
         os.environ["OPENAI_API_KEY"] = api_key
         chain = build_retrieval_chain(docs, prompt)
-        return chain.run(query)
+        output = chain.invoke({"query": query})
+        return output["result"]
     except Exception as e:
         logging.error(f"GPT error: {e}")
         return "❌ GPT error"

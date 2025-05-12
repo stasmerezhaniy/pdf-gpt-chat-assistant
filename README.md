@@ -1,97 +1,112 @@
+# PDF GPT Chat Assistant (v1.1)
 
-# 🧠 PDF Chat Assistant with GPT
+A simple and powerful Streamlit-based chatbot that lets you chat with any PDF document — even scanned or image-based ones — using OpenAI GPT.
 
-PDF Chat Assistant is a Streamlit-based application that allows users to upload any PDF file and interact with its contents using GPT (OpenAI API).  
-You can ask questions in any language, and receive answers in the same language — in the style of a chosen persona like John Cena, Winston Churchill, or Taras Shevchenko.
-
----
-
-## 📸 Screenshots
-
-![Screenshot 1](./screenshots/Screenshot_1.png)  
-![Screenshot 2](./screenshots/Screenshot_2.png)
-![Screenshot 3](./screenshots/Screenshot_3.png)
+Supports OCR fallback via Tesseract, custom response personas (like John Cena or Elon Musk), and conversational memory.
 
 ---
 
 ## 🚀 Features
 
-- 📄 Upload any PDF document (up to 200MB)
-- 🤖 Ask questions about the content
-- 🌍 Multilingual support
-- 🎭 Choose a response persona for custom style
-- ✅ Unit-tested with pytest
-- ⚡ Powered by Langchain, OpenAI, and PyMuPDF
+* 📄 Upload **any PDF**, including scanned image-based files
+* 🧠 Intelligent fallback to **OCR** using Tesseract if no text is detected
+* 🤖 Ask **natural language questions** about your document
+* 🧑‍🎤 Choose a **response persona** (John Cena, Elon Musk, etc.)
+* 💬 Maintains **chat history** inside Streamlit session
 
 ---
 
-## 🛠️ Tech Stack
+## 🖼 Example Use Case
 
-- Python
-- Streamlit
-- Langchain
-- OpenAI API
-- PyMuPDF (fitz)
-- Chroma (vector store)
-- Pytest (for unit testing)
+Upload a lease agreement, then ask:
+
+> "What can I be evicted for?"
+
+📥 GPT will answer based on the extracted content:
+
+> "You may be evicted for dumping grease into sinks or toilets, performing construction without landlord permission, or keeping animals without written approval."
 
 ---
 
-## 📦 Installation
+## 🧩 Requirements
 
-```bash
-git clone https://github.com/stasmerezhaniy/pdf-gpt-chat-assistant.git
-cd pdf-gpt-chat-assistant
+### Python packages (install via pip):
+
+```
 pip install -r requirements.txt
+```
+
+### Additionally, install manually:
+
+#### 🛠 [Tesseract OCR](https://github.com/UB-Mannheim/tesseract/wiki)
+
+For Windows, install to:
+
+```
+C:\Program Files\Tesseract-OCR\tesseract.exe
+```
+
+And update the following line in `ocr_fallback.py`:
+
+```python
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+```
+
+#### 🧾 [Poppler for Windows](https://github.com/oschwartz10612/poppler-windows/releases)
+
+Extract and note the full path to the `bin/` folder. Then update `ocr_fallback.py`:
+
+```python
+poppler_path = r"C:\path\to\poppler\bin"
 ```
 
 ---
 
-## 🔑 API Key
+## 📂 Project Structure
 
-Create a file called `api_key.py` in the project root:
-
-```python
-API_KEY = "your-openai-api-key"
+```
+pdf_gpt_chat/
+├── app.py                # Main Streamlit app
+├── api_key.py            # Your OpenAI key (DO NOT COMMIT)
+├── requirements.txt      # Python dependencies
+├── utils/
+│   ├── pdf_reader.py     # Extract text or run OCR
+│   ├── ocr_fallback.py   # OCR engine
+│   ├── text_splitter.py  # Chunking text
+│   ├── chat_engine.py    # GPT-based retriever chain
+│   └── prompt_templates.py # Persona prompts
+└── tests/                # Unit tests
 ```
 
 ---
 
 ## ▶️ Run Locally
 
-```bash
+```
 streamlit run app.py
 ```
 
----
-
-## 🧪 Run Tests
-
-```bash
-pytest tests/
-```
+Then open the local URL in your browser.
 
 ---
 
-## 📁 Folder Structure
+## 🔒 Security
 
-```
-├── app.py
-├── utils/
-│   ├── pdf_reader.py
-│   ├── text_splitter.py
-│   ├── chat_engine.py
-│   └── prompt_templates.py
-├── tests/
-│   └── test_*.py
-├── requirements.txt
-└── README.md
-```
+* Make sure `api_key.py` is in `.gitignore`.
+* Never commit your OpenAI keys.
 
 ---
 
-## 📝 License
+## 🏁 Roadmap
 
-MIT — feel free to use and modify.
+* [x] OCR fallback
+* [x] Persona responses
+* [x] Basic tests
+* [ ] Add streaming output
+* [ ] Hugging Face Spaces demo
 
 ---
+
+## 🤝 Author
+
+Developed by **Stanislav Merezhanyi** — a self-taught Python developer passionate about AI-powered tools.
